@@ -2,14 +2,21 @@ plugins {
     id 'java-library'
 }
 
-sourceCompatibility = property('version.java')
-targetCompatibility = property('version.java')
+group = 'dev.arhor'
+version = '0.1.0'
+
+java {
+    sourceCompatibility = property('version.java')
+    targetCompatibility = property('version.java')
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation "com.google.code.findbugs:jsr305:${property('version.findbugs-jsr305')}"
+
     testImplementation "org.assertj:assertj-core:${property('version.assertj-core')}"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${property('version.junit-jupiter')}"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${property('version.junit-jupiter')}"
