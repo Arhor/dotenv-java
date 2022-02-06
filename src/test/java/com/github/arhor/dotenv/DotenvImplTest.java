@@ -46,7 +46,6 @@ class DotenvImplTest {
         // given
         final Dotenv dotenv = Dotenv.configure().load();
         final String propertyName = "c";
-        final String propertyValue = "1 2 3";
 
         // when
         final ThrowingCallable action = () -> dotenv.get(propertyName);
