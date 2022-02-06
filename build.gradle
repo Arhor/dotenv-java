@@ -1,8 +1,9 @@
 plugins {
     id 'java-library'
+    id 'jacoco'
 }
 
-group = 'dev.arhor'
+group = 'com.github.arhor'
 version = '0.1.0'
 
 java {
@@ -31,6 +32,35 @@ tasks.withType(JavaCompile) {
     ])
 }
 
+jacoco {
+    toolVersion = property('version.jacoco')
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.required.set(true)
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.95
+            }
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+check {
+    dependsOn jacocoTestReport, jacocoTestCoverageVerification
 }

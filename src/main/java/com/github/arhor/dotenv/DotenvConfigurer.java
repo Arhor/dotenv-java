@@ -1,39 +1,38 @@
-package dev.arhor.dotenv;
+package com.github.arhor.dotenv;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 import java.util.Properties;
 
 public final class DotenvConfigurer {
 
-    private static final boolean DEFAULT_CASE_SENSITIVE = true;
-    private static final boolean DEFAULT_INCLUDE_SYSTEM_VARIABLES = true;
-    private static final boolean DEFAULT_ALLOW_OVERRIDE_SYSTEM_VARIABLES = true;
-    private static final String DEFAULT_LOCATION = "./";
-    private static final String DEFAULT_FILENAME = ".env";
+    private static final class LazyHolder {
+        private static final DotenvConfigurer DEFAULT = new DotenvConfigurer(
+            false,
+            true,
+            true,
+            true,
+            ".",
+            ".env"
+        );
+    }
 
+    private final boolean strictMode;
     private final boolean caseSensitive;
     private final boolean includeSystemVariables;
     private final boolean allowOverrideSystemVariables;
     private final String location;
     private final String filename;
 
-    DotenvConfigurer() {
-        this(
-            DEFAULT_CASE_SENSITIVE,
-            DEFAULT_INCLUDE_SYSTEM_VARIABLES,
-            DEFAULT_ALLOW_OVERRIDE_SYSTEM_VARIABLES,
-            DEFAULT_LOCATION,
-            DEFAULT_FILENAME
-        );
-    }
-
     private DotenvConfigurer(
+        final boolean strictMode,
         final boolean caseSensitive,
         final boolean includeSystemVariables,
         final boolean allowOverrideSystemVariables,
         final String location,
         final String filename
     ) {
+        this.strictMode = strictMode;
         this.caseSensitive = caseSensitive;
         this.includeSystemVariables = includeSystemVariables;
         this.allowOverrideSystemVariables = allowOverrideSystemVariables;
@@ -41,15 +40,33 @@ public final class DotenvConfigurer {
         this.filename = filename;
     }
 
+    static DotenvConfigurer getInstance() {
+        return LazyHolder.DEFAULT;
+    }
+
     @Nonnull
     public Dotenv load() {
+        final Map<String, String> systemEnvironment = System.getenv();
         final Properties fileContent = DotenvFileLoader.readDotenvFileAsProperties(location, filename);
-        return new DotenvImpl(this, fileContent);
+        return new DotenvImpl(this, systemEnvironment, fileContent);
+    }
+
+    @Nonnull
+    public DotenvConfigurer strictMode(final boolean strictMode) {
+        return new DotenvConfigurer(
+            strictMode,
+            caseSensitive,
+            includeSystemVariables,
+            allowOverrideSystemVariables,
+            location,
+            filename
+        );
     }
 
     @Nonnull
     public DotenvConfigurer caseSensitive(final boolean caseSensitive) {
         return new DotenvConfigurer(
+            strictMode,
             caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
@@ -62,6 +79,7 @@ public final class DotenvConfigurer {
     @Nonnull
     public DotenvConfigurer includeSystemVariables(final boolean includeSystemVariables) {
         return new DotenvConfigurer(
+            strictMode,
             caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
@@ -74,6 +92,7 @@ public final class DotenvConfigurer {
     @Nonnull
     public DotenvConfigurer allowOverrideSystemVariables(final boolean allowOverrideSystemVariables) {
         return new DotenvConfigurer(
+            strictMode,
             caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
@@ -86,6 +105,7 @@ public final class DotenvConfigurer {
     @Nonnull
     public DotenvConfigurer location(@Nonnull final String location) {
         return new DotenvConfigurer(
+            strictMode,
             caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
@@ -98,12 +118,17 @@ public final class DotenvConfigurer {
     @Nonnull
     public DotenvConfigurer filename(@Nonnull final String filename) {
         return new DotenvConfigurer(
+            strictMode,
             caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
             location,
             filename
         );
+    }
+
+    public boolean isStrictMode() {
+        return strictMode;
     }
 
     public boolean isCaseSensitive() {

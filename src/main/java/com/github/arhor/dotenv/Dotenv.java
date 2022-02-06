@@ -1,4 +1,4 @@
-package dev.arhor.dotenv;
+package com.github.arhor.dotenv;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -6,14 +6,15 @@ import javax.annotation.Nullable;
 public interface Dotenv {
 
     static DotenvConfigurer configure() {
-        return new DotenvConfigurer();
+        return DotenvConfigurer.getInstance();
     }
 
-    @Nonnull
-    String get(@Nonnull String name) throws MissingPropertyException;
+    @Nullable
+    String get(@Nonnull String name);
 
     @Nullable
     String get(@Nonnull String name, @Nullable String defaultValue);
 
-    boolean contains(@Nonnull String name);
+    @Nonnull
+    String getRequired(@Nonnull String name) throws MissingPropertyException;
 }

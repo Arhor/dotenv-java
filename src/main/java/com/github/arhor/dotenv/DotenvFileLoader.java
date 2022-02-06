@@ -1,4 +1,4 @@
-package dev.arhor.dotenv;
+package com.github.arhor.dotenv;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,6 @@ final class DotenvFileLoader {
 
     private static final String SOURCE_FILE = "file:";
     private static final String SOURCE_ANDROID_RESOURCE = "android.resource:";
-    private static final String SOURCE_CLASSPATH = "classpath:";
 
     private DotenvFileLoader() { /* no-op */ }
 
@@ -22,11 +21,8 @@ final class DotenvFileLoader {
             final Properties properties = new Properties();
             properties.load(dotenvFileInputStream);
             return properties;
-        } catch (Exception e) {
-            throw new RuntimeException(
-                "Could not find " + filename + " within location " + location + " on the file system ",
-                e
-            );
+        } catch (IOException e) {
+            throw new RuntimeException("Could not find " + filename + " within provided location " + location, e);
         }
     }
 

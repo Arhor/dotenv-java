@@ -1,4 +1,4 @@
-package dev.arhor.dotenv;
+package com.github.arhor.dotenv;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ class DotenvConfigurerTest {
     @Test
     void DotenvConfiguration_builder_method_should_return_non_null_object() {
         // when
-        final DotenvConfigurer configurer = new DotenvConfigurer();
+        final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
 
         // then
         assertThat(configurer)
@@ -19,7 +19,7 @@ class DotenvConfigurerTest {
     @Test
     void DotenvConfiguration$Builder_build_method_should_return_non_null_object() {
         // given
-        final DotenvConfigurer configurer = new DotenvConfigurer();
+        final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
 
         // when
         final Dotenv dotenv = configurer.load();
@@ -32,7 +32,7 @@ class DotenvConfigurerTest {
     @Test
     void DotenvConfiguration$Builder_caseSensitive_method_should_return_new_configurer_instance() {
         // given
-        final DotenvConfigurer configurer = new DotenvConfigurer();
+        final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
 
         // when
         final DotenvConfigurer configurerAfterInvocation = configurer.caseSensitive(true);
@@ -49,7 +49,7 @@ class DotenvConfigurerTest {
         final boolean expectedCaseSensitive = false;
 
         // when
-        final Dotenv dotenv = new DotenvConfigurer()
+        final Dotenv dotenv = DotenvConfigurer.getInstance()
             .caseSensitive(expectedCaseSensitive)
             .load();
 
@@ -62,7 +62,7 @@ class DotenvConfigurerTest {
     @Test
     void DotenvConfiguration$Builder_includeSystemVariables_method_should_return_new_configurer_instance() {
         // given
-        final DotenvConfigurer configurer = new DotenvConfigurer();
+        final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
 
         // when
         final DotenvConfigurer configurerAfterInvocation = configurer.includeSystemVariables(true);
@@ -79,7 +79,7 @@ class DotenvConfigurerTest {
         final boolean expectedIncludeSystemVariables = false;
 
         // when
-        final Dotenv dotenv = new DotenvConfigurer()
+        final Dotenv dotenv = DotenvConfigurer.getInstance()
             .includeSystemVariables(expectedIncludeSystemVariables)
             .load();
 
@@ -92,7 +92,7 @@ class DotenvConfigurerTest {
     @Test
     void DotenvConfiguration$Builder_allowOverrideSystemVariables_method_should_return_new_configurer_instance() {
         // given
-        final DotenvConfigurer configurer = new DotenvConfigurer();
+        final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
 
         // when
         final DotenvConfigurer configurerAfterInvocation = configurer.allowOverrideSystemVariables(true);
@@ -109,7 +109,7 @@ class DotenvConfigurerTest {
         final boolean expectedAllowOverrideSystemVariables = false;
 
         // when
-        final Dotenv dotenv = new DotenvConfigurer()
+        final Dotenv dotenv = DotenvConfigurer.getInstance()
             .allowOverrideSystemVariables(expectedAllowOverrideSystemVariables)
             .load();
 
