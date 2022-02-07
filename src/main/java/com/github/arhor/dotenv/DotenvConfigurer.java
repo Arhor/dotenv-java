@@ -11,14 +11,12 @@ public final class DotenvConfigurer {
             false,
             true,
             true,
-            true,
             ".",
             ".env"
         );
     }
 
     private final boolean strictMode;
-    private final boolean caseSensitive;
     private final boolean includeSystemVariables;
     private final boolean allowOverrideSystemVariables;
     private final String location;
@@ -26,14 +24,12 @@ public final class DotenvConfigurer {
 
     private DotenvConfigurer(
         final boolean strictMode,
-        final boolean caseSensitive,
         final boolean includeSystemVariables,
         final boolean allowOverrideSystemVariables,
         final String location,
         final String filename
     ) {
         this.strictMode = strictMode;
-        this.caseSensitive = caseSensitive;
         this.includeSystemVariables = includeSystemVariables;
         this.allowOverrideSystemVariables = allowOverrideSystemVariables;
         this.location = location;
@@ -55,32 +51,17 @@ public final class DotenvConfigurer {
     public DotenvConfigurer strictMode(final boolean strictMode) {
         return new DotenvConfigurer(
             strictMode,
-            caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
             location,
             filename
         );
     }
-
-    @Nonnull
-    public DotenvConfigurer caseSensitive(final boolean caseSensitive) {
-        return new DotenvConfigurer(
-            strictMode,
-            caseSensitive,
-            includeSystemVariables,
-            allowOverrideSystemVariables,
-            location,
-            filename
-        );
-    }
-
 
     @Nonnull
     public DotenvConfigurer includeSystemVariables(final boolean includeSystemVariables) {
         return new DotenvConfigurer(
             strictMode,
-            caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
             location,
@@ -93,7 +74,6 @@ public final class DotenvConfigurer {
     public DotenvConfigurer allowOverrideSystemVariables(final boolean allowOverrideSystemVariables) {
         return new DotenvConfigurer(
             strictMode,
-            caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
             location,
@@ -106,7 +86,6 @@ public final class DotenvConfigurer {
     public DotenvConfigurer location(@Nonnull final String location) {
         return new DotenvConfigurer(
             strictMode,
-            caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
             location,
@@ -119,7 +98,6 @@ public final class DotenvConfigurer {
     public DotenvConfigurer filename(@Nonnull final String filename) {
         return new DotenvConfigurer(
             strictMode,
-            caseSensitive,
             includeSystemVariables,
             allowOverrideSystemVariables,
             location,
@@ -129,10 +107,6 @@ public final class DotenvConfigurer {
 
     public boolean isStrictMode() {
         return strictMode;
-    }
-
-    public boolean isCaseSensitive() {
-        return caseSensitive;
     }
 
     public boolean isIncludeSystemVariables() {

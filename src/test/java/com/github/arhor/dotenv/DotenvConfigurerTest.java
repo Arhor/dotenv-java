@@ -30,36 +30,6 @@ class DotenvConfigurerTest {
     }
 
     @Test
-    void DotenvConfiguration$Builder_caseSensitive_method_should_return_new_configurer_instance() {
-        // given
-        final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
-
-        // when
-        final DotenvConfigurer configurerAfterInvocation = configurer.caseSensitive(true);
-
-        // then
-        assertThat(configurerAfterInvocation)
-            .isNotNull()
-            .isNotSameAs(configurer);
-    }
-
-    @Test
-    void DotenvConfiguration$Builder_caseSensitive_method_affect_correct_config_field() {
-        // given
-        final boolean expectedCaseSensitive = false;
-
-        // when
-        final Dotenv dotenv = DotenvConfigurer.getInstance()
-            .caseSensitive(expectedCaseSensitive)
-            .load();
-
-        // then
-        assertThat(dotenv)
-            .isNotNull()
-            .hasFieldOrPropertyWithValue("caseSensitive", expectedCaseSensitive);
-    }
-
-    @Test
     void DotenvConfiguration$Builder_includeSystemVariables_method_should_return_new_configurer_instance() {
         // given
         final DotenvConfigurer configurer = DotenvConfigurer.getInstance();

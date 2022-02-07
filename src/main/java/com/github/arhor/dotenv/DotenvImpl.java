@@ -11,7 +11,7 @@ final class DotenvImpl implements Dotenv {
     private static final String REFERENCE_START = "${";
     private static final String REFERENCE_END = "}";
 
-    private final boolean caseSensitive;
+    private final boolean strictMode;
     private final boolean includeSystemVariables;
     private final boolean allowOverrideSystemVariables;
 
@@ -26,7 +26,7 @@ final class DotenvImpl implements Dotenv {
         final @Nonnull Map<String, String> systemEnvironment,
         final @Nonnull Properties fileContent
     ) {
-        this.caseSensitive = config.isCaseSensitive();
+        this.strictMode = config.isStrictMode();
         this.includeSystemVariables = config.isIncludeSystemVariables();
         this.allowOverrideSystemVariables = config.isAllowOverrideSystemVariables();
         this.systemEnvironment = systemEnvironment;
@@ -104,7 +104,7 @@ final class DotenvImpl implements Dotenv {
         if (currentSearchHistory.contains(refName)) {
             currentSearchHistory.add(refName);
             throw new CyclicReferenceException(
-                "Cyclic references found: " + String.join(" -> ", currentSearchHistory)
+                "Cyclic references found, path: " + currentSearchPath()
             );
         } else {
             currentSearchHistory.add(refName);
@@ -114,10 +114,19 @@ final class DotenvImpl implements Dotenv {
         if (result == null) {
             result = getProperty(refName);
             if (result == null) {
+                if (strictMode) {
+                    throw new UnresolvedReferenceException(
+                        "Cannot resolve reference with name '" + refName + "', path: " + currentSearchPath()
+                    );
+                }
                 result = REFERENCE_START + refName + REFERENCE_END;
             }
             resolvedRefs.put(refName, result);
         }
         return result;
+    }
+
+    private String currentSearchPath() {
+        return String.join(" -> ", currentSearchHistory);
     }
 }
