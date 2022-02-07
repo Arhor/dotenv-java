@@ -3,7 +3,11 @@ package com.github.arhor.dotenv;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @NotThreadSafe
 final class DotenvImpl implements Dotenv {
@@ -43,14 +47,19 @@ final class DotenvImpl implements Dotenv {
     @Override
     public String get(final @Nonnull String name, final @Nullable String defaultValue) {
         final String property = getPropertyThenClearSearchHistory(name);
-        return Optional.ofNullable(property).orElse(defaultValue);
+        return (property != null)
+            ? property
+            : defaultValue;
     }
 
     @Nonnull
     @Override
     public String getRequired(final @Nonnull String name) throws MissingPropertyException {
         final String property = getPropertyThenClearSearchHistory(name);
-        return Optional.ofNullable(property).orElseThrow(MissingPropertyException::new);
+        if (property != null) {
+            return property;
+        }
+        throw new MissingPropertyException("Cannot find property `" + name + "`");
     }
 
     private String getPropertyThenClearSearchHistory(final String name) {
@@ -62,7 +71,10 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String getProperty(final String name) {
-        return Optional.ofNullable(findProperty(name)).map(this::resolveReferences).orElse(null);
+        String property = findProperty(name);
+        return (property != null)
+            ? resolveReferences(property)
+            : null;
     }
 
     private String findProperty(final String name) {
