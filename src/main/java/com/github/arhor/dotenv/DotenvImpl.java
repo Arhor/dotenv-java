@@ -1,17 +1,17 @@
 package com.github.arhor.dotenv;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
-
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 
 final class DotenvImpl implements Dotenv {
 
+    private static final String SEARCH_PATH_DELIMITER = " -> ";
     private static final String REFERENCE_START = "${";
     private static final String REFERENCE_END = "}";
 
@@ -23,7 +23,7 @@ final class DotenvImpl implements Dotenv {
     private final Properties fileContent;
 
     private final Map<String, String> resolvedRefs = new HashMap<>();
-    private final List<String> currentSearchHistory = new ArrayList<>();
+    private final Set<String> currentSearchHistory = new LinkedHashSet<>();
 
     DotenvImpl(
         final DotenvConfigurer config,
@@ -56,9 +56,9 @@ final class DotenvImpl implements Dotenv {
             : defaultValue;
     }
 
-    @NonNull
+    @Nonnull
     @Override
-    public String getRequired(@NonNull final String name) throws MissingPropertyException {
+    public String getRequired(@Nonnull final String name) throws MissingPropertyException {
         final var property = getPropertyThenClearSearchHistory(name);
         if (property != null) {
             return property;
@@ -117,11 +117,8 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String findRefValue(final String refName) {
-        if (currentSearchHistory.contains(refName)) {
-            currentSearchHistory.add(refName);
-            throw new CyclicReferenceException("Cyclic references found, path: " + currentSearchPath());
-        } else {
-            currentSearchHistory.add(refName);
+        if (!currentSearchHistory.add(refName)) {
+            throw new CyclicReferenceException(currentSearchPath(), SEARCH_PATH_DELIMITER, refName);
         }
 
         var result = resolvedRefs.get(refName);
@@ -130,9 +127,7 @@ final class DotenvImpl implements Dotenv {
             result = getProperty(refName);
             if (result == null) {
                 if (strictMode) {
-                    throw new UnresolvedReferenceException(
-                        "Cannot resolve reference with name '" + refName + "', path: " + currentSearchPath()
-                    );
+                    throw new UnresolvedReferenceException(currentSearchPath(), refName);
                 }
                 result = REFERENCE_START + refName + REFERENCE_END;
             }

@@ -1,12 +1,15 @@
 plugins {
-    id 'java-library'
     id 'jacoco'
-    id 'checkstyle'
+    id 'java-library'
     id 'maven-publish'
 }
 
 group = 'com.github.arhor'
 version = '0.1.0'
+
+wrapper {
+    gradleVersion = project.property('version.gradle')
+}
 
 java {
     sourceCompatibility = property('version.java')
@@ -30,10 +33,11 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) {
-    options.compilerArgs.addAll([
+    options.compilerArgs = [
         '-Xlint:unchecked',
         '-Xlint:deprecation',
-    ])
+        '-parameters',
+    ]
 }
 
 jacoco {
@@ -67,6 +71,7 @@ test {
 
 check {
     dependsOn(
+        test,
         jacocoTestReport,
         jacocoTestCoverageVerification,
     )
@@ -74,7 +79,7 @@ check {
 
 publishing {
     publications {
-        create('maven', MavenPublication, {
+        create('maven', MavenPublication) {
             from components['java']
 
             pom {
@@ -92,6 +97,6 @@ publishing {
                     }
                 }
             }
-        })
+        }
     }
 }

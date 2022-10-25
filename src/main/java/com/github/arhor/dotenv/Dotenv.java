@@ -1,7 +1,8 @@
 package com.github.arhor.dotenv;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface representing loaded .env file.
@@ -23,6 +24,6 @@ public interface Dotenv {
     @Nullable
     String get(@Nullable String name, @Nullable String defaultValue);
 
-    @NonNull
-    String getRequired(@NonNull String name) throws MissingPropertyException;
+    @Nonnull
+    String getRequired(@Nonnull String name) throws MissingPropertyException;
 }

@@ -11,9 +11,6 @@ import java.util.Properties;
 
 final class DotenvFileLoader {
 
-    private static final String SOURCE_FILE = "file:";
-    private static final String SOURCE_ANDROID_RESOURCE = "android.resource:";
-
     private DotenvFileLoader() { /* no-op */ }
 
     static Properties readDotenvFileAsProperties(final String location, final String filename) throws IOException {
@@ -73,7 +70,6 @@ final class DotenvFileLoader {
     }
 
     private static boolean shouldUseURI(final String fileLocation) {
-        return fileLocation.startsWith(SOURCE_FILE)
-            || fileLocation.startsWith(SOURCE_ANDROID_RESOURCE);
+        return fileLocation.startsWith("file:");
     }
 }

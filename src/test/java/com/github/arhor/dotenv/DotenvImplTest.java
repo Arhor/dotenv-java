@@ -1,6 +1,5 @@
 package com.github.arhor.dotenv;
 
-import org.assertj.core.api.ThrowableAssert;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 
@@ -49,8 +48,6 @@ class DotenvImplTest {
 
         // when
         final ThrowingCallable action = () -> dotenv.get(propertyName);
-
-        action.call();
 
         // then
         assertThatExceptionOfType(CyclicReferenceException.class)
