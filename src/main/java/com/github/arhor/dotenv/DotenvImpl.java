@@ -1,15 +1,15 @@
 package com.github.arhor.dotenv;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
-@NotThreadSafe
 final class DotenvImpl implements Dotenv {
 
     private static final String REFERENCE_START = "${";
@@ -26,10 +26,14 @@ final class DotenvImpl implements Dotenv {
     private final List<String> currentSearchHistory = new ArrayList<>();
 
     DotenvImpl(
-        final @Nonnull DotenvConfigurer config,
-        final @Nonnull Map<String, String> systemEnvironment,
-        final @Nonnull Properties fileContent
+        final DotenvConfigurer config,
+        final Map<String, String> systemEnvironment,
+        final Properties fileContent
     ) {
+        Objects.requireNonNull(config, "config must not be null");
+        Objects.requireNonNull(systemEnvironment, "systemEnvironment must not be null");
+        Objects.requireNonNull(fileContent, "fileContent must not be null");
+
         this.strictMode = config.isStrictMode();
         this.includeSystemVariables = config.isIncludeSystemVariables();
         this.allowOverrideSystemVariables = config.isAllowOverrideSystemVariables();
@@ -39,23 +43,23 @@ final class DotenvImpl implements Dotenv {
 
     @Nullable
     @Override
-    public String get(final @Nonnull String name) {
+    public String get(@Nullable final String name) {
         return getPropertyThenClearSearchHistory(name);
     }
 
     @Nullable
     @Override
-    public String get(final @Nonnull String name, final @Nullable String defaultValue) {
-        final String property = getPropertyThenClearSearchHistory(name);
+    public String get(@Nullable final String name, @Nullable final String defaultValue) {
+        final var property = getPropertyThenClearSearchHistory(name);
         return (property != null)
             ? property
             : defaultValue;
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    public String getRequired(final @Nonnull String name) throws MissingPropertyException {
-        final String property = getPropertyThenClearSearchHistory(name);
+    public String getRequired(@NonNull final String name) throws MissingPropertyException {
+        final var property = getPropertyThenClearSearchHistory(name);
         if (property != null) {
             return property;
         }
@@ -71,14 +75,14 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String getProperty(final String name) {
-        String property = findProperty(name);
+        final var property = findProperty(name);
         return (property != null)
             ? resolveReferences(property)
             : null;
     }
 
     private String findProperty(final String name) {
-        final String property = includeSystemVariables
+        final var property = includeSystemVariables
             ? systemEnvironment.get(name)
             : null;
         return ((property == null) || allowOverrideSystemVariables)
@@ -91,23 +95,23 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String resolveReferences(final String input, final int startIndex) {
-        final int refStartIndex = input.indexOf(REFERENCE_START, startIndex);
+        final var refStartIndex = input.indexOf(REFERENCE_START, startIndex);
 
         if (refStartIndex == -1) {
             return input;
         }
 
-        final int refEndIndex = input.indexOf(REFERENCE_END, refStartIndex);
+        final var refEndIndex = input.indexOf(REFERENCE_END, refStartIndex);
 
         if (refEndIndex == -1) {
             return input;
         }
 
-        final String refName = input.substring(refStartIndex + REFERENCE_START.length(), refEndIndex);
-        final String refValue = findRefValue(refName);
+        final var refName = input.substring(refStartIndex + REFERENCE_START.length(), refEndIndex);
+        final var refValue = findRefValue(refName);
 
-        final String prefix = (refStartIndex > 0) ? input.substring(0, refStartIndex) : "";
-        final String suffix = input.substring(refEndIndex + 1);
+        final var prefix = (refStartIndex > 0) ? input.substring(0, refStartIndex) : "";
+        final var suffix = input.substring(refEndIndex + 1);
 
         return resolveReferences(prefix + refValue + suffix, prefix.length() + refValue.length());
     }
@@ -115,14 +119,13 @@ final class DotenvImpl implements Dotenv {
     private String findRefValue(final String refName) {
         if (currentSearchHistory.contains(refName)) {
             currentSearchHistory.add(refName);
-            throw new CyclicReferenceException(
-                "Cyclic references found, path: " + currentSearchPath()
-            );
+            throw new CyclicReferenceException("Cyclic references found, path: " + currentSearchPath());
         } else {
             currentSearchHistory.add(refName);
         }
 
-        String result = resolvedRefs.get(refName);
+        var result = resolvedRefs.get(refName);
+
         if (result == null) {
             result = getProperty(refName);
             if (result == null) {

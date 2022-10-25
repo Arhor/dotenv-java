@@ -16,21 +16,23 @@ final class DotenvFileLoader {
 
     private DotenvFileLoader() { /* no-op */ }
 
-    public static Properties readDotenvFileAsProperties(final String location, final String filename) {
-        try (final InputStream dotenvFileInputStream = getDotenvFileInputStream(location, filename)) {
-            final Properties properties = new Properties();
-            properties.load(dotenvFileInputStream);
-            return properties;
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find " + filename + " within provided location " + location, e);
+    static Properties readDotenvFileAsProperties(final String location, final String filename) throws IOException {
+        try (final var dotenvFileInputStream = getDotenvFileInputStream(location, filename)) {
+            return readDotenvFileAsProperties(dotenvFileInputStream);
         }
+    }
+
+    static Properties readDotenvFileAsProperties(final InputStream dotenvFileInputStream) throws IOException {
+        final var properties = new Properties();
+        properties.load(dotenvFileInputStream);
+        return properties;
     }
 
     private static InputStream getDotenvFileInputStream(final String location, final String filename)
         throws IOException {
 
-        final String fileLocation = getDotenvFileLocation(location, filename);
-        final Path path = getDotenvFilePath(fileLocation);
+        final var fileLocation = getDotenvFileLocation(location, filename);
+        final var path = getDotenvFilePath(fileLocation);
 
         if (Files.exists(path)) {
             return Files.newInputStream(path);
@@ -40,9 +42,9 @@ final class DotenvFileLoader {
     }
 
     private static InputStream getDotenvFileInputStreamFromClasspath(final String fileLocation) {
-        final Class<?> currentClass = DotenvFileLoader.class;
+        final var currentClass = DotenvFileLoader.class;
 
-        InputStream inputStream = currentClass.getResourceAsStream(fileLocation);
+        var inputStream = currentClass.getResourceAsStream(fileLocation);
         if (inputStream == null) {
             inputStream = currentClass.getClassLoader().getResourceAsStream(fileLocation);
         }
@@ -56,7 +58,7 @@ final class DotenvFileLoader {
     }
 
     private static String getDotenvFileLocation(final String location, final String filename) {
-        final String dir = location
+        final var dir = location
             .replaceAll("\\\\", "/")
             .replaceFirst("\\.env$", "")
             .replaceFirst("/$", "");

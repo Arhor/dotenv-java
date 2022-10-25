@@ -42,13 +42,15 @@ class DotenvImplTest {
     }
 
     @Test
-    void should_not_fail_3() {
+    void should_not_fail_3() throws Throwable {
         // given
         final Dotenv dotenv = Dotenv.configure().load();
         final String propertyName = "c";
 
         // when
         final ThrowingCallable action = () -> dotenv.get(propertyName);
+
+        action.call();
 
         // then
         assertThatExceptionOfType(CyclicReferenceException.class)

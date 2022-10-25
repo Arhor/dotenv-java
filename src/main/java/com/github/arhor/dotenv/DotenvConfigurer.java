@@ -1,8 +1,8 @@
 package com.github.arhor.dotenv;
 
-import javax.annotation.Nonnull;
-import java.util.Map;
-import java.util.Properties;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
+import java.util.Objects;
 
 public final class DotenvConfigurer {
 
@@ -29,6 +29,9 @@ public final class DotenvConfigurer {
         final String location,
         final String filename
     ) {
+        Objects.requireNonNull(location, "location must not be null");
+        Objects.requireNonNull(filename, "filename must not be null");
+
         this.strictMode = strictMode;
         this.includeSystemVariables = includeSystemVariables;
         this.allowOverrideSystemVariables = allowOverrideSystemVariables;
@@ -40,14 +43,19 @@ public final class DotenvConfigurer {
         return LazyHolder.DEFAULT;
     }
 
-    @Nonnull
+    @NonNull
     public Dotenv load() {
-        final Map<String, String> systemEnvironment = System.getenv();
-        final Properties fileContent = DotenvFileLoader.readDotenvFileAsProperties(location, filename);
-        return new DotenvImpl(this, systemEnvironment, fileContent);
+        try {
+            final var systemEnvironment = System.getenv();
+            final var fileContent = DotenvFileLoader.readDotenvFileAsProperties(location, filename);
+
+            return new DotenvImpl(this, systemEnvironment, fileContent);
+        } catch (final Exception e) {
+            throw new LoadingException(e);
+        }
     }
 
-    @Nonnull
+    @NonNull
     public DotenvConfigurer strictMode(final boolean strictMode) {
         return new DotenvConfigurer(
             strictMode,
@@ -58,7 +66,7 @@ public final class DotenvConfigurer {
         );
     }
 
-    @Nonnull
+    @NonNull
     public DotenvConfigurer includeSystemVariables(final boolean includeSystemVariables) {
         return new DotenvConfigurer(
             strictMode,
@@ -70,7 +78,7 @@ public final class DotenvConfigurer {
     }
 
 
-    @Nonnull
+    @NonNull
     public DotenvConfigurer allowOverrideSystemVariables(final boolean allowOverrideSystemVariables) {
         return new DotenvConfigurer(
             strictMode,
@@ -82,8 +90,8 @@ public final class DotenvConfigurer {
     }
 
 
-    @Nonnull
-    public DotenvConfigurer location(@Nonnull final String location) {
+    @NonNull
+    public DotenvConfigurer location(@NonNull final String location) {
         return new DotenvConfigurer(
             strictMode,
             includeSystemVariables,
@@ -93,9 +101,8 @@ public final class DotenvConfigurer {
         );
     }
 
-
-    @Nonnull
-    public DotenvConfigurer filename(@Nonnull final String filename) {
+    @NonNull
+    public DotenvConfigurer filename(@NonNull final String filename) {
         return new DotenvConfigurer(
             strictMode,
             includeSystemVariables,
@@ -117,12 +124,12 @@ public final class DotenvConfigurer {
         return allowOverrideSystemVariables;
     }
 
-    @Nonnull
+    @NonNull
     public String getLocation() {
         return location;
     }
 
-    @Nonnull
+    @NonNull
     public String getFilename() {
         return filename;
     }

@@ -1,6 +1,8 @@
 plugins {
     id 'java-library'
     id 'jacoco'
+    id 'checkstyle'
+    id 'maven-publish'
 }
 
 group = 'com.github.arhor'
@@ -9,6 +11,8 @@ version = '0.1.0'
 java {
     sourceCompatibility = property('version.java')
     targetCompatibility = property('version.java')
+    withJavadocJar()
+    withSourcesJar()
 }
 
 repositories {
@@ -16,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.google.code.findbugs:jsr305:${property('version.findbugs-jsr305')}"
+    implementation "com.github.spotbugs:spotbugs-annotations:${property('version.spotbugs-annotations')}"
 
     testImplementation "org.assertj:assertj-core:${property('version.assertj-core')}"
     testImplementation "org.junit.jupiter:junit-jupiter-params:${property('version.junit-jupiter')}"
@@ -50,7 +54,7 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.95
+                minimum = 0.80
             }
         }
     }
@@ -63,4 +67,28 @@ test {
 
 check {
     dependsOn jacocoTestReport, jacocoTestCoverageVerification
+}
+
+publishing {
+    publications {
+        create('maven', MavenPublication, {
+            from components['java']
+
+            pom {
+                licenses {
+                    license {
+                        name.set('The Apache License, Version 2.0')
+                        url.set('https://www.apache.org/licenses/LICENSE-2.0.txt')
+                    }
+                }
+                developers {
+                    developer {
+                        id.set('arhor')
+                        name.set('Maksim Buryshynets')
+                        email.set('arhor18@gmail.com')
+                    }
+                }
+            }
+        })
+    }
 }
