@@ -12,8 +12,10 @@ import java.util.Set;
 final class DotenvImpl implements Dotenv {
 
     private static final String SEARCH_PATH_DELIMITER = " -> ";
-    private static final String REFERENCE_START = "${";
-    private static final String REFERENCE_END = "}";
+    private static final String REF_PREFIX = "${";
+    private static final String REF_SUFFIX = "}";
+
+    private static final int REF_PREFIX_LENGTH = REF_PREFIX.length();
 
     private final boolean strictMode;
     private final boolean includeSystemVariables;
@@ -95,23 +97,21 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String resolveReferences(final String input, final int startIndex) {
-        final var refStartIndex = input.indexOf(REFERENCE_START, startIndex);
-
-        if (refStartIndex == -1) {
+        final var refPrefixIndex = input.indexOf(REF_PREFIX, startIndex);
+        if (refPrefixIndex == -1) {
             return input;
         }
 
-        final var refEndIndex = input.indexOf(REFERENCE_END, refStartIndex);
-
-        if (refEndIndex == -1) {
+        final var refSuffixIndex = input.indexOf(REF_SUFFIX, refPrefixIndex);
+        if (refSuffixIndex == -1) {
             return input;
         }
 
-        final var refName = input.substring(refStartIndex + REFERENCE_START.length(), refEndIndex);
+        final var refName = input.substring(refPrefixIndex + REF_PREFIX_LENGTH, refSuffixIndex);
         final var refValue = findRefValue(refName);
 
-        final var prefix = (refStartIndex > 0) ? input.substring(0, refStartIndex) : "";
-        final var suffix = input.substring(refEndIndex + 1);
+        final var prefix = (refPrefixIndex > 0) ? input.substring(0, refPrefixIndex) : "";
+        final var suffix = input.substring(refSuffixIndex + 1);
 
         return resolveReferences(prefix + refValue + suffix, prefix.length() + refValue.length());
     }
@@ -129,7 +129,7 @@ final class DotenvImpl implements Dotenv {
                 if (strictMode) {
                     throw new UnresolvedReferenceException(currentSearchPath(), refName);
                 }
-                result = REFERENCE_START + refName + REFERENCE_END;
+                result = REF_PREFIX + refName + REF_SUFFIX;
             }
             resolvedRefs.put(refName, result);
         }
