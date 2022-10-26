@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.arhor:java-dotenv-revised:0.1.0'
+    implementation 'com.github.arhor:java-dotenv-revised:0.1.1'
 }
 ```
 
