@@ -2,7 +2,6 @@ plugins {
     id 'jacoco'
     id 'java-library'
     id 'maven-publish'
-    id 'signing'
 }
 
 group = 'io.github.arhor'
