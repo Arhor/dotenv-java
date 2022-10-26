@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.arhor'
-version = '0.1.1'
+version = '0.1.2'
 
 sourceCompatibility = property('version.java')
 targetCompatibility = property('version.java')
