@@ -65,6 +65,23 @@ class DotenvImplTest {
         }
 
         @Test
+        @DisplayName("should return an expected value for a key when the value computed using several references")
+        void dotenv_get_complex_reference_positive_test() {
+            // given
+            final var dotenv = Dotenv.configure().strictMode(true).load();
+            final var propertyKey = "lorem";
+            final var propertyVal = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+
+            // when
+            final var result = dotenv.get(propertyKey);
+
+            // then
+            assertThat(result)
+                .isNotNull()
+                .isEqualTo(propertyVal);
+        }
+
+        @Test
         @DisplayName("should throw LoadingException loading loading file by wrong path")
         void dotenv_get_changed_location_negative_test() {
             // given
