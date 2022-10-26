@@ -1,4 +1,4 @@
-package com.github.arhor.dotenv;
+package io.github.arhor.dotenv;
 
 public abstract class DotenvException extends RuntimeException {
 

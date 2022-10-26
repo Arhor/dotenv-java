@@ -1,4 +1,4 @@
-package com.github.arhor.dotenv;
+package io.github.arhor.dotenv;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;

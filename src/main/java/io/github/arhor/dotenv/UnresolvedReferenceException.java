@@ -1,4 +1,4 @@
-package com.github.arhor.dotenv;
+package io.github.arhor.dotenv;
 
 public final class UnresolvedReferenceException extends DotenvException {
 

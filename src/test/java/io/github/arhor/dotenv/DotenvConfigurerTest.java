@@ -1,4 +1,4 @@
-package com.github.arhor.dotenv;
+package io.github.arhor.dotenv;
 
 import org.junit.jupiter.api.Test;
 

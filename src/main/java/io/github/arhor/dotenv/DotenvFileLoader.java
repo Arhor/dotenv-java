@@ -1,4 +1,4 @@
-package com.github.arhor.dotenv;
+package io.github.arhor.dotenv;
 
 import java.io.File;
 import java.io.IOException;
