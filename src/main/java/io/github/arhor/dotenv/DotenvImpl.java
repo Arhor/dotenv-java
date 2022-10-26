@@ -118,7 +118,7 @@ final class DotenvImpl implements Dotenv {
 
     private String findRefValue(final String refName) {
         if (!currentSearchHistory.add(refName)) {
-            throw new CyclicReferenceException(currentSearchPath(), SEARCH_PATH_DELIMITER, refName);
+            throw new CyclicReferenceException(currentSearchPath() + SEARCH_PATH_DELIMITER + refName);
         }
 
         var result = resolvedRefs.get(refName);

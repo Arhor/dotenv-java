@@ -31,11 +31,9 @@ final class DotenvFileLoader {
         final var fileLocation = getDotenvFileLocation(location, filename);
         final var path = getDotenvFilePath(fileLocation);
 
-        if (Files.exists(path)) {
-            return Files.newInputStream(path);
-        } else {
-            return getDotenvFileInputStreamFromClasspath(fileLocation);
-        }
+        return Files.exists(path)
+            ? Files.newInputStream(path)
+            : getDotenvFileInputStreamFromClasspath(fileLocation);
     }
 
     private static InputStream getDotenvFileInputStreamFromClasspath(final String fileLocation) {
