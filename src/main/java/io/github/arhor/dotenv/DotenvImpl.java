@@ -53,7 +53,7 @@ final class DotenvImpl implements Dotenv {
         if (property != null) {
             return property;
         }
-        throw new MissingPropertyException("Cannot find property `" + name + "`");
+        throw new MissingPropertyException(name);
     }
 
     private String getPropertyThenClearSearchHistory(final String name) {
@@ -65,6 +65,9 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String getProperty(final String name) {
+        if (!currentSearchHistory.add(name)) {
+            throw new CyclicReferenceException(currentSearchPath() + SEARCH_PATH_DELIMITER + name);
+        }
         final var property = findProperty(name);
         return (property != null)
             ? resolveReferences(property)
@@ -105,10 +108,6 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String findRefValue(final String refName) {
-        if (!currentSearchHistory.add(refName)) {
-            throw new CyclicReferenceException(currentSearchPath() + SEARCH_PATH_DELIMITER + refName);
-        }
-
         var result = resolvedRefs.get(refName);
 
         if (result == null) {

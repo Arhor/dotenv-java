@@ -83,7 +83,7 @@ class DotenvImplTest {
         void dotenv_get_cyclic_dependency_negative_test() {
             // given
             final Dotenv dotenv = Dotenv.configure().load();
-            final String propertyName = "c";
+            final String propertyName = "a";
 
             // when
             final var result = catchThrowable(() -> dotenv.get(propertyName));
@@ -92,6 +92,22 @@ class DotenvImplTest {
             assertThat(result)
                 .isInstanceOf(CyclicReferenceException.class)
                 .hasMessageContaining("a -> b -> c -> a");
+        }
+
+        @Test
+        @DisplayName("should throw UnresolvedReferenceException resolving property with missing dependency")
+        void dotenv_get_unresolved_dependency_negative_test() {
+            // given
+            final Dotenv dotenv = Dotenv.configure().strictMode(true).load();
+            final String propertyName = "d";
+
+            // when
+            final var result = catchThrowable(() -> dotenv.get(propertyName));
+
+            // then
+            assertThat(result)
+                .isInstanceOf(UnresolvedReferenceException.class)
+                .hasMessage("Cannot resolve reference with name 'f', path: d -> e -> f");
         }
     }
 
@@ -103,5 +119,20 @@ class DotenvImplTest {
     @Nested
     @DisplayName("Dotenv.getRequired(String)")
     class DotenvGetRequiredTests {
+        @Test
+        @DisplayName("should throw MissingPropertyException resolving missing property")
+        void dotenv_getRequired_missing_property_negative_test() {
+            // given
+            final Dotenv dotenv = Dotenv.configure().load();
+            final String propertyName = "missing_property";
+
+            // when
+            final var result = catchThrowable(() -> dotenv.getRequired(propertyName));
+
+            // then
+            assertThat(result)
+                .isInstanceOf(MissingPropertyException.class)
+                .hasMessage("Cannot find property: 'missing_property'");
+        }
     }
 }
