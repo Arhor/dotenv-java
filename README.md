@@ -9,4 +9,16 @@ However, there are several aspects that could be improved:
   to use existing `java.util.Properties` instead of any manual work
 - [dotenv-java][1] cannot resolve references between properties
 
+To install the library add:
+
+```gradle
+repositories { 
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.arhor:java-dotenv-revised:0.1.0'
+}
+```
+
 [1]: https://github.com/cdimascio/dotenv-java
