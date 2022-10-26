@@ -1,5 +1,7 @@
 # java-dotenv-revised
 
+[![Release](https://jitpack.io/v/arhor/java-dotenv-revised.svg)](https://jitpack.io/#arhor/java-dotenv-revised)
+
 This project strongly inspired by [dotenv-java][1] which is a great tool, and is practically the only existing library
 that provides the ability to work with `.env` files conveniently.
 
