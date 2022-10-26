@@ -44,22 +44,6 @@ class DotenvConfigurerTest {
     }
 
     @Test
-    void DotenvConfiguration$Builder_includeSystemVariables_affect_correct_config_field() {
-        // given
-        final boolean expectedIncludeSystemVariables = false;
-
-        // when
-        final Dotenv dotenv = DotenvConfigurer.getInstance()
-            .includeSystemVariables(expectedIncludeSystemVariables)
-            .load();
-
-        // then
-        assertThat(dotenv)
-            .isNotNull()
-            .hasFieldOrPropertyWithValue("includeSystemVariables", expectedIncludeSystemVariables);
-    }
-
-    @Test
     void DotenvConfiguration$Builder_allowOverrideSystemVariables_method_should_return_new_configurer_instance() {
         // given
         final DotenvConfigurer configurer = DotenvConfigurer.getInstance();
@@ -71,21 +55,5 @@ class DotenvConfigurerTest {
         assertThat(configurerAfterInvocation)
             .isNotNull()
             .isNotSameAs(configurer);
-    }
-
-    @Test
-    void DotenvConfiguration$Builder_allowOverrideSystemVariables_affect_correct_config_field() {
-        // given
-        final boolean expectedAllowOverrideSystemVariables = false;
-
-        // when
-        final Dotenv dotenv = DotenvConfigurer.getInstance()
-            .allowOverrideSystemVariables(expectedAllowOverrideSystemVariables)
-            .load();
-
-        // then
-        assertThat(dotenv)
-            .isNotNull()
-            .hasFieldOrPropertyWithValue("allowOverrideSystemVariables", expectedAllowOverrideSystemVariables);
     }
 }

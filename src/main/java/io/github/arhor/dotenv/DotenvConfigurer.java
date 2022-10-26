@@ -45,10 +45,8 @@ public final class DotenvConfigurer {
     @Nonnull
     public Dotenv load() {
         try {
-            final var systemEnvironment = System.getenv();
             final var fileContent = DotenvFileLoader.readDotenvFileAsProperties(location, filename);
-
-            return new DotenvImpl(this, systemEnvironment, fileContent);
+            return new DotenvImpl(this, fileContent);
         } catch (final Exception e) {
             throw new LoadingException(e);
         }

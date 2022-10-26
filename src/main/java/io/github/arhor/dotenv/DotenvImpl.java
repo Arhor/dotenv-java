@@ -17,30 +17,18 @@ final class DotenvImpl implements Dotenv {
 
     private static final int REF_PREFIX_LENGTH = REF_PREFIX.length();
 
-    private final boolean strictMode;
-    private final boolean includeSystemVariables;
-    private final boolean allowOverrideSystemVariables;
-
-    private final Map<String, String> systemEnvironment;
-    private final Properties fileContent;
+    private final DotenvConfigurer configurer;
+    private final Properties properties;
 
     private final Map<String, String> resolvedRefs = new HashMap<>();
     private final Set<String> currentSearchHistory = new LinkedHashSet<>();
 
-    DotenvImpl(
-        final DotenvConfigurer config,
-        final Map<String, String> systemEnvironment,
-        final Properties fileContent
-    ) {
-        Objects.requireNonNull(config, "config must not be null");
-        Objects.requireNonNull(systemEnvironment, "systemEnvironment must not be null");
-        Objects.requireNonNull(fileContent, "fileContent must not be null");
+    DotenvImpl(final DotenvConfigurer configurer, final Properties properties) {
+        Objects.requireNonNull(configurer, "config must not be null");
+        Objects.requireNonNull(properties, "fileContent must not be null");
 
-        this.strictMode = config.isStrictMode();
-        this.includeSystemVariables = config.isIncludeSystemVariables();
-        this.allowOverrideSystemVariables = config.isAllowOverrideSystemVariables();
-        this.systemEnvironment = systemEnvironment;
-        this.fileContent = fileContent;
+        this.configurer = configurer;
+        this.properties = properties;
     }
 
     @Nullable
@@ -84,11 +72,11 @@ final class DotenvImpl implements Dotenv {
     }
 
     private String findProperty(final String name) {
-        final var property = includeSystemVariables
-            ? systemEnvironment.get(name)
+        final var property = configurer.isIncludeSystemVariables()
+            ? System.getenv().get(name)
             : null;
-        return ((property == null) || allowOverrideSystemVariables)
-            ? fileContent.getProperty(name)
+        return ((property == null) || configurer.isAllowOverrideSystemVariables())
+            ? properties.getProperty(name)
             : property;
     }
 
@@ -126,7 +114,7 @@ final class DotenvImpl implements Dotenv {
         if (result == null) {
             result = getProperty(refName);
             if (result == null) {
-                if (strictMode) {
+                if (configurer.isStrictMode()) {
                     throw new UnresolvedReferenceException(currentSearchPath(), refName);
                 }
                 result = REF_PREFIX + refName + REF_SUFFIX;

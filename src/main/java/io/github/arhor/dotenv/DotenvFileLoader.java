@@ -58,7 +58,7 @@ final class DotenvFileLoader {
             .replaceFirst("\\.env$", "")
             .replaceFirst("/$", "");
 
-        return dir + File.separator + filename;
+        return dir + "/" + filename;
     }
 
     private static Path getDotenvFilePath(final String fileLocation) {
