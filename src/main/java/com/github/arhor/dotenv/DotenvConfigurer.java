@@ -7,11 +7,11 @@ public final class DotenvConfigurer {
 
     private static final class LazyHolder {
         private static final DotenvConfigurer DEFAULT = new DotenvConfigurer(
-            /* strictMode = */                   false,
-            /* includeSystemVariables = */       true,
+            /* strictMode =                   */ false,
+            /* includeSystemVariables =       */ true,
             /* allowOverrideSystemVariables = */ true,
-            /* location = */                     ".",
-            /* filename = */                     ".env"
+            /* location =                     */ ".",
+            /* filename =                     */ ".env"
         );
     }
 

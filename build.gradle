@@ -2,18 +2,20 @@ plugins {
     id 'jacoco'
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
 group = 'com.github.arhor'
 version = '0.1.0'
+
+sourceCompatibility = property('version.java')
+targetCompatibility = property('version.java')
 
 wrapper {
     gradleVersion = project.property('version.gradle')
 }
 
 java {
-    sourceCompatibility = property('version.java')
-    targetCompatibility = property('version.java')
     withJavadocJar()
     withSourcesJar()
 }
@@ -45,7 +47,7 @@ jacoco {
 }
 
 jacocoTestReport {
-    dependsOn test
+    shouldRunAfter test
 
     reports {
         xml.required.set(false)
@@ -66,7 +68,6 @@ jacocoTestCoverageVerification {
 
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestReport
 }
 
 check {
@@ -80,9 +81,9 @@ check {
 publishing {
     publications {
         create('maven', MavenPublication) {
-            from components['java']
+            it.from components['java']
 
-            pom {
+            it.pom {
                 licenses {
                     license {
                         name.set('The Apache License, Version 2.0')
