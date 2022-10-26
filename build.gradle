@@ -1,0 +1,103 @@
+plugins {
+    id 'jacoco'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'com.github.arhor'
+version = '0.1.0'
+
+sourceCompatibility = property('version.java')
+targetCompatibility = property('version.java')
+
+wrapper {
+    gradleVersion = project.property('version.gradle')
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.github.spotbugs:spotbugs-annotations:${property('version.spotbugs-annotations')}"
+
+    testImplementation "org.assertj:assertj-core:${property('version.assertj-core')}"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${property('version.junit-jupiter')}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${property('version.junit-jupiter')}"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${property('version.junit-jupiter')}"
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+        '-Xlint:unchecked',
+        '-Xlint:deprecation',
+        '-parameters',
+    ]
+}
+
+jacoco {
+    toolVersion = property('version.jacoco')
+}
+
+jacocoTestReport {
+    shouldRunAfter test
+
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.required.set(true)
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.90
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    environment 'TEST_RESOURCES_DIR', file('src/test/resources')
+}
+
+check {
+    dependsOn(
+        test,
+        jacocoTestReport,
+        jacocoTestCoverageVerification,
+    )
+}
+
+publishing {
+    publications {
+        create('maven', MavenPublication) {
+            it.from components['java']
+
+            it.pom {
+                licenses {
+                    license {
+                        name.set('The Apache License, Version 2.0')
+                        url.set('https://www.apache.org/licenses/LICENSE-2.0.txt')
+                    }
+                }
+                developers {
+                    developer {
+                        id.set('arhor')
+                        name.set('Maksim Buryshynets')
+                        email.set('arhor18@gmail.com')
+                    }
+                }
+            }
+        }
+    }
+}
