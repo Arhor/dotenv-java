@@ -24,41 +24,47 @@ final class DotenvImpl implements Dotenv {
     private final Set<String> currentSearchHistory = new LinkedHashSet<>();
 
     DotenvImpl(final DotenvConfigurer configurer, final Properties properties) {
-        Objects.requireNonNull(configurer, "config must not be null");
-        Objects.requireNonNull(properties, "fileContent must not be null");
-
-        this.configurer = configurer;
-        this.properties = properties;
+        this.configurer = Objects.requireNonNull(configurer, "configurer must not be null");
+        this.properties = Objects.requireNonNull(properties, "properties must not be null");
     }
 
     @Nullable
     @Override
     public String get(@Nullable final String name) {
-        return getPropertyThenClearSearchHistory(name);
+        return getPropertyThenClearSearchHistory(name, null, false);
     }
 
     @Nullable
     @Override
     public String get(@Nullable final String name, @Nullable final String defaultValue) {
-        final var property = getPropertyThenClearSearchHistory(name);
-        return (property != null)
-            ? property
-            : defaultValue;
+        return getPropertyThenClearSearchHistory(name, defaultValue, true);
     }
 
     @Nonnull
     @Override
     public String getRequired(@Nonnull final String name) throws MissingPropertyException {
-        final var property = getPropertyThenClearSearchHistory(name);
+        final var property = getPropertyThenClearSearchHistory(name, null, false);
         if (property != null) {
             return property;
         }
         throw new MissingPropertyException(name);
     }
 
-    private String getPropertyThenClearSearchHistory(final String name) {
+    private String getPropertyThenClearSearchHistory(
+        final String name,
+        final String defaultValue,
+        final boolean useDefaultValue
+    ) {
         try {
-            return getProperty(name);
+            final var property = getProperty(name);
+
+            if (property != null || !useDefaultValue) {
+                return property;
+            } else if (defaultValue != null) {
+                return resolveReferences(defaultValue);
+            } else {
+                return null;
+            }
         } finally {
             currentSearchHistory.clear();
         }
@@ -78,7 +84,7 @@ final class DotenvImpl implements Dotenv {
         final var property = configurer.isIncludeSystemVariables()
             ? System.getenv().get(name)
             : null;
-        return ((property == null) || configurer.isAllowOverrideSystemVariables())
+        return ((property == null) || configurer.isReplaceSystemVariables())
             ? properties.getProperty(name)
             : property;
     }

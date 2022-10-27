@@ -2,10 +2,11 @@ plugins {
     id 'jacoco'
     id 'java-library'
     id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.github.arhor'
-version = '0.1.3'
+version = '0.1.4'
 
 sourceCompatibility = property('version.java')
 targetCompatibility = property('version.java')
@@ -24,13 +25,9 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.spotbugs:spotbugs-annotations:${property('version.spotbugs-annotations')}"
+    implementation "com.github.spotbugs:spotbugs-annotations:${property('version.spotbugs')}"
 
-    testImplementation "org.assertj:assertj-core:${property('version.assertj-core')}"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:${property('version.junit-jupiter')}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${property('version.junit-jupiter')}"
-
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${property('version.junit-jupiter')}"
+    testImplementation "io.kotest:kotest-runner-junit5-jvm:${property('version.kotest')}"
 }
 
 tasks.withType(JavaCompile) {
@@ -41,13 +38,23 @@ tasks.withType(JavaCompile) {
     ]
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    kotlinOptions {
+        freeCompilerArgs = [
+            '-Xjsr305=strict',
+            '-Xjvm-default=all',
+        ]
+        jvmTarget = project.property('version.java')
+        javaParameters = true
+    }
+}
+
 jacoco {
     toolVersion = property('version.jacoco')
 }
 
 jacocoTestReport {
-    shouldRunAfter test
-
+    dependsOn test
     reports {
         xml.required.set(false)
         csv.required.set(false)
@@ -59,7 +66,7 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.90
+                minimum = 0.95
             }
         }
     }
@@ -67,6 +74,7 @@ jacocoTestCoverageVerification {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
     environment 'TEST_RESOURCES_DIR', file('src/test/resources')
 }
 
