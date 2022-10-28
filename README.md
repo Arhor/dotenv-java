@@ -11,16 +11,62 @@ However, there are several aspects that could be improved:
   to use existing `java.util.Properties` instead of any manual work
 - [dotenv-java][1] cannot resolve references between properties
 
-To install the library add:
+In other words, instead of reimplementing bicycle and parsing `.env` file manually using regular expressions, etc., it's
+loaded just like the usual `.properties` file. In my implementation, I tried to concentrate on the functionality that,
+in my opinion, is exactly what is missing - resolving references.
 
-```gradle
-repositories { 
-    maven { url 'https://jitpack.io' }
-}
+Consider for example a file with the following content:
 
-dependencies {
-    implementation 'com.github.arhor:java-dotenv-revised:0.1.3'
-}
+```properties
+A=1
+B=2
+C=3
+D=${A} ${B} ${C}
 ```
+
+Trying to get property `D` will lead to value `1 2 3` be resolved.
+
+## Installation
+
+Here you can find the instructions for installing the library using various build systems.
+
+### Gradle
+
+1. Add Jitpack repository to your repositories list
+    ```groovy
+    repositories {
+        // ...other repositories you use...
+        maven { url 'https://jitpack.io' }
+    }
+    ```
+
+2. Add library dependency to you dependencies list
+    ```groovy
+    dependencies {
+        implementation 'com.github.arhor:java-dotenv-revised:0.1.4'
+    }
+    ```
+
+### Maven
+
+1. Add Jitpack repository to your repositories list
+    ```xml
+    <repositories>
+        <!-- ...other repositories you use... -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    ```
+
+2. Add library dependency to you dependencies list
+    ```xml
+    <dependency>
+        <groupId>com.github.arhor</groupId>
+        <artifactId>java-dotenv-revised</artifactId>
+        <version>0.1.4</version>
+    </dependency>
+    ```
 
 [1]: https://github.com/cdimascio/dotenv-java
