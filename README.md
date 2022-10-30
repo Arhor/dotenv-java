@@ -43,7 +43,7 @@ Here you can find the instructions for installing the library using various buil
 2. Add library dependency to you dependencies list
     ```groovy
     dependencies {
-        implementation 'com.github.arhor:java-dotenv-revised:0.1.4'
+        implementation 'com.github.arhor:java-dotenv-revised:0.1.5'
     }
     ```
 
@@ -65,7 +65,7 @@ Here you can find the instructions for installing the library using various buil
     <dependency>
         <groupId>com.github.arhor</groupId>
         <artifactId>java-dotenv-revised</artifactId>
-        <version>0.1.4</version>
+        <version>0.1.5</version>
     </dependency>
     ```
 

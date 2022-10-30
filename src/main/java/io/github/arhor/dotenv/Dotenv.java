@@ -3,11 +3,13 @@ package io.github.arhor.dotenv;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Interface representing loaded .env file.
  */
-public interface Dotenv {
+public interface Dotenv extends Iterable<Map.Entry<String, String>> {
 
     /**
      * Factory method returning {@link DotenvConfigurer} instance.
@@ -46,4 +48,8 @@ public interface Dotenv {
      */
     @Nonnull
     String getRequired(@Nonnull String name) throws MissingPropertyException;
+
+    @Nonnull
+    @Override
+    Iterator<Map.Entry<String, String>> iterator();
 }

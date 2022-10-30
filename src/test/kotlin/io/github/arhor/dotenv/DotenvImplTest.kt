@@ -2,6 +2,7 @@ package io.github.arhor.dotenv
 
 import io.kotest.assertions.throwables.shouldThrowAny
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
@@ -156,6 +157,20 @@ class DotenvImplTest : DescribeSpec({
                 .shouldNotBeNull()
                 .shouldBeInstanceOf<MissingPropertyException>()
                 .shouldHaveMessage("Cannot find property: 'missing_property'")
+        }
+    }
+
+    describe("Dotenv.iterator()") {
+        it("should return an iterator with only one expected entry") {
+            // given
+            val dotenv = Dotenv.configure().location("./directory").load()
+            val result = ArrayList<Map.Entry<String, String>>()
+
+            // when
+            dotenv.iterator().forEach(result::add)
+
+            // then
+            result.shouldContainExactly(java.util.Map.entry("test_key", "test_val"))
         }
     }
 })

@@ -1,8 +1,11 @@
 package io.github.arhor.dotenv;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -50,6 +53,12 @@ final class DotenvImpl implements Dotenv {
         throw new MissingPropertyException(name);
     }
 
+    @NotNull
+    @Override
+    public Iterator<Map.Entry<String, String>> iterator() {
+        return properties.entrySet().stream().map(this::stringifyEntry).iterator();
+    }
+
     private String getPropertyThenClearSearchHistory(
         final String name,
         final String defaultValue,
@@ -82,7 +91,7 @@ final class DotenvImpl implements Dotenv {
 
     private String findProperty(final String name) {
         final var property = configurer.isIncludeSystemVariables()
-            ? System.getenv().get(name)
+            ? System.getenv(name)
             : null;
         return ((property == null) || configurer.isReplaceSystemVariables())
             ? properties.getProperty(name)
@@ -131,5 +140,12 @@ final class DotenvImpl implements Dotenv {
 
     private String currentSearchPath() {
         return String.join(" -> ", currentSearchHistory);
+    }
+
+    private Map.Entry<String, String> stringifyEntry(final Map.Entry<Object, Object> it) {
+        final var key = it.getKey().toString();
+        final var value = it.getValue().toString();
+
+        return Map.entry(key, value);
     }
 }
